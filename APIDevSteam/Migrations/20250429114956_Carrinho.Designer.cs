@@ -4,6 +4,7 @@ using APIDevSteam.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIDevSteam.Migrations
 {
     [DbContext(typeof(APIContext))]
-    partial class APIContextModelSnapshot : ModelSnapshot
+    [Migration("20250429114956_Carrinho")]
+    partial class Carrinho
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace APIDevSteam.Migrations
                     b.Property<DateTime?>("DataCriacao")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DataFinalizacao")
+                    b.Property<DateTime?>("DataFinazalizacao")
                         .HasColumnType("datetime2");
 
                     b.Property<bool?>("Finalizado")
@@ -105,6 +108,7 @@ namespace APIDevSteam.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Banner")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Desconto")
@@ -115,9 +119,6 @@ namespace APIDevSteam.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Preco")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PrecoOriginal")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Titulo")
