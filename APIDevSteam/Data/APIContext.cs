@@ -1,7 +1,7 @@
-﻿using APIDevSteam.Models;
+﻿
+using APIDevSteam.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteamJau.Models;
 
 namespace APIDevSteam.Data
 {
@@ -18,6 +18,8 @@ namespace APIDevSteam.Data
         public DbSet<Carrinho> Carrinhos { get; set; }
         public DbSet<ItemCarrinho> ItensCarrinhos { get; set; }
         public DbSet<Cupom> Cupons { get; set; }
+        public DbSet<CupomCarrinho> CuponsCarrinho { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,10 +29,11 @@ namespace APIDevSteam.Data
             builder.Entity<JogoMidia>().ToTable("JogosMidia");
             builder.Entity<Categoria>().ToTable("Categorias");
             builder.Entity<JogoCategoria>().ToTable("JogosCategorias");
+
             builder.Entity<Carrinho>().ToTable("Carrinhos");
             builder.Entity<ItemCarrinho>().ToTable("ItensCarrinhos");
             builder.Entity<Cupom>().ToTable("Cupons");
+            builder.Entity<CupomCarrinho>().ToTable("CuponsCarrinho");
         }
-        public DbSet<APIDevSteamJau.Models.CupomCarrinho> CupomCarrinho { get; set; } = default!;
     }
 }

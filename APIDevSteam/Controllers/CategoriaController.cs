@@ -8,27 +8,27 @@ using Microsoft.EntityFrameworkCore;
 using APIDevSteam.Data;
 using APIDevSteam.Models;
 
-namespace APIDevSteam.Controllers
+namespace APIDevSteamJau.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class CategoriasController : ControllerBase
     {
         private readonly APIContext _context;
 
-        public CategoriaController(APIContext context)
+        public CategoriasController(APIContext context)
         {
             _context = context;
         }
 
-        // GET: api/Categoria
+        // GET: api/Categorias
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
             return await _context.Categorias.ToListAsync();
         }
 
-        // GET: api/Categoria/5
+        // GET: api/Categorias/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Categoria>> GetCategoria(Guid id)
         {
@@ -42,7 +42,7 @@ namespace APIDevSteam.Controllers
             return categoria;
         }
 
-        // PUT: api/Categoria/5
+        // PUT: api/Categorias/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategoria(Guid id, Categoria categoria)
@@ -73,7 +73,7 @@ namespace APIDevSteam.Controllers
             return NoContent();
         }
 
-        // POST: api/Categoria
+        // POST: api/Categorias
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
@@ -84,7 +84,7 @@ namespace APIDevSteam.Controllers
             return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
         }
 
-        // DELETE: api/Categoria/5
+        // DELETE: api/Categorias/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoria(Guid id)
         {

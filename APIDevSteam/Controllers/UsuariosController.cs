@@ -1,11 +1,10 @@
-﻿
-using APIDevSteam.Models;
+﻿using APIDevSteam.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

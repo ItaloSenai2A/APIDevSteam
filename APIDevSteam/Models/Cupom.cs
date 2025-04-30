@@ -9,9 +9,5 @@
         public bool? Ativo { get; set; }
         public DateTime? DataCriacao { get; set; }
         public int? LimiteUso { get; set; }
-
     }
 }
-
-
-

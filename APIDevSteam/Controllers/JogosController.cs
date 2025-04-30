@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteam.Data;
 using APIDevSteam.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using APIDevSteam.Data;
 
 namespace APIDevSteamJau.Controllers
 {
@@ -57,7 +57,6 @@ namespace APIDevSteamJau.Controllers
             {
                 return BadRequest();
             }
-
             // Copiar o preço do jogo para o preço original
             jogo.PrecoOriginal = jogo.Preco;
 
@@ -224,6 +223,7 @@ namespace APIDevSteamJau.Controllers
             return Ok(new { Base64Image = $"data:image/{Path.GetExtension(userImagePath).TrimStart('.')};base64,{base64Image}" });
         }
 
+
         // [HttpPUT] : Aplicar um Desconto
         [HttpPut("AplicarDesconto")]
         public async Task<IActionResult> AplicarDesconto(Guid jogoId, int desconto)
@@ -247,6 +247,7 @@ namespace APIDevSteamJau.Controllers
 
             return Ok(jogo);
         }
+
         // [HttpPUT] : Remover um Desconto
         [HttpPut("RemoverDesconto")]
         public async Task<IActionResult> RemoverDesconto(Guid jogoId)
@@ -265,5 +266,6 @@ namespace APIDevSteamJau.Controllers
             await _context.SaveChangesAsync();
             return Ok(jogo);
         }
+
     }
 }

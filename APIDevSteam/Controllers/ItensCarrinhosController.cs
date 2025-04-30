@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteam.Data;
 using APIDevSteam.Models;
+using APIDevSteam.Data;
 
-namespace APIDevSteam.Controllers
+
+namespace APIDevSteamJau.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,14 +22,14 @@ namespace APIDevSteam.Controllers
             _context = context;
         }
 
-        // GET: api/ItemCarrinhos
+        // GET: api/ItensCarrinhos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemCarrinho>>> GetItensCarrinhos()
         {
             return await _context.ItensCarrinhos.ToListAsync();
         }
 
-        // GET: api/ItemCarrinhos/5
+        // GET: api/ItensCarrinhos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemCarrinho>> GetItemCarrinho(Guid id)
         {
@@ -42,7 +43,7 @@ namespace APIDevSteam.Controllers
             return itemCarrinho;
         }
 
-        // PUT: api/ItemCarrinhos/5
+        // PUT: api/ItensCarrinhos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutItemCarrinho(Guid id, ItemCarrinho itemCarrinho)
@@ -73,26 +74,26 @@ namespace APIDevSteam.Controllers
             return NoContent();
         }
 
-        // POST: api/ItemCarrinhos
+        // POST: api/ItensCarrinhos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<ItemCarrinho>> PostItemCarrinho(ItemCarrinho itemCarrinho)
         {
-            //Verificar se o carrinho existe
+            // Verifica se o carrinho existe
             var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
             if (carrinho == null)
             {
-                return NotFound("Carrinho não encontrado");
+                return NotFound("Carrinho não encontrado.");
             }
 
-            //Verificar se o jogo existe
+            // Verifica se o jogo existe
             var jogo = await _context.Jogos.FindAsync(itemCarrinho.JogoId);
             if (jogo == null)
             {
-                return NotFound("Jogo não encontrado");
+                return NotFound("Jogo não encontrado.");
             }
 
-            // Calcula o valor total 
+            // Calcula o valor total
             itemCarrinho.ValorTotal = itemCarrinho.Quantidade * jogo.Preco;
 
             // Adiciona o valor total ao carrinho
@@ -104,8 +105,7 @@ namespace APIDevSteam.Controllers
             return CreatedAtAction("GetItemCarrinho", new { id = itemCarrinho.ItemCarrinhoId }, itemCarrinho);
         }
 
-
-        // DELETE: api/ItemCarrinhos/5
+        // DELETE: api/ItensCarrinhos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItemCarrinho(Guid id)
         {
@@ -119,10 +119,10 @@ namespace APIDevSteam.Controllers
             var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
             if (carrinho == null)
             {
-                return NotFound("Carrinho não encontrado");
+                return NotFound("Carrinho não encontrado.");
             }
 
-            // Remove o vaor total do carrinho
+            // Remove o valor total do carrinho
             carrinho.ValorTotal -= itemCarrinho.ValorTotal;
 
             // Verifica se o valor total do carrinho é menor que zero

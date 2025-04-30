@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteam.Data;
 using APIDevSteam.Models;
+using APIDevSteam.Data;
 
-namespace APIDevSteam.Controllers
+namespace APIDevSteamJau.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -78,6 +78,7 @@ namespace APIDevSteam.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupom>> PostCupom(Cupom cupom)
         {
+            cupom.Ativo = true;
             _context.Cupons.Add(cupom);
             await _context.SaveChangesAsync();
 

@@ -9,7 +9,8 @@ using APIDevSteam.Data;
 using APIDevSteam.Models;
 using System.Security.Claims;
 
-namespace APIDevSteam.Controllers
+
+namespace APIDevSteamJau.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -79,13 +80,14 @@ namespace APIDevSteam.Controllers
         [HttpPost]
         public async Task<ActionResult<Carrinho>> PostCarrinho(Carrinho carrinho)
         {
-            //Data e hora atual
+            // Data e Hora atual
             carrinho.DataCriacao = DateTime.Now;
             carrinho.DataFinalizacao = null;
             carrinho.Finalizado = false;
 
             // Valor total inicial
             carrinho.ValorTotal = 0;
+
             _context.Carrinhos.Add(carrinho);
             await _context.SaveChangesAsync();
 
@@ -114,7 +116,7 @@ namespace APIDevSteam.Controllers
         }
 
         [HttpPost]
-        [Route("FinalizarCompra /{id}")]
+        [Route("FinalizarCompra/{id}")]
         public async Task<IActionResult> FinalizarCompra(Guid id)
         {
             // Se carrinho de compra existe
