@@ -168,5 +168,50 @@ namespace APIDevSteam.Controllers
 
             return Ok();
         }
+
+        // Listar todos os carrinhos finalizados por um usuário
+        [HttpGet("PedidosFinalizadosCliente")]
+        public async Task<ActionResult<IEnumerable<Carrinho>>> GetCarrinhosFinalizados()
+        {
+            // Pegar o Id do IdentityUser logado a partir do token
+            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado.");
+            }
+            // Busca os carrinhos finalizados do usuário
+            var carrinhos = await _context.Carrinhos
+                .Where(c => c.UsuarioId == Guid.Parse(usuarioId) && c.Finalizado == true)
+                .ToListAsync();
+            if (carrinhos.Count == 0)
+            {
+                return NotFound("Nenhum carrinho finalizado encontrado.");
+            }
+            return carrinhos;
+        }
+
+        // Listar todos os jogos comprados pelo cliente logado
+        [HttpGet("JogosCompradosCliente")]
+        public ActionResult<IEnumerable<Jogo>> GetJogosComprados()
+        {
+            // Pegar o Id do IdentityUser logado a partir do token
+            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado.");
+            }
+            // Busca os jogos comprados pelo usuário
+            var jogosComprados = _context.ItensCarrinhos
+                .Include(i => i.Jogo)
+                .Where(i => i.Carrinho.UsuarioId == Guid.Parse(usuarioId) && i.Carrinho.Finalizado == true)
+                .Select(i => i.Jogo)
+                .ToList();
+            if (jogosComprados.Count == 0)
+            {
+                return NotFound("Nenhum jogo comprado encontrado.");
+            }
+            return jogosComprados;
+        }
+
     }
 }

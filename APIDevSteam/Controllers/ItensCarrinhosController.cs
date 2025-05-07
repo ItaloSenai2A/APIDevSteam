@@ -167,5 +167,67 @@ namespace APIDevSteam.Controllers
 
             return Ok(topSellingItems);
         }
+
+        // Aumentar a quantidade de um item no carrinho
+        [HttpPut("AumentarQuantidade/{id}")]
+        public async Task<IActionResult> AumentarQuantidade(Guid id)
+        {
+            var itemCarrinho = await _context.ItensCarrinhos.FindAsync(id);
+            if (itemCarrinho == null)
+            {
+                return NotFound();
+            }
+
+            // Atualiza a quantidade e o valor total
+            itemCarrinho.Quantidade++;
+            itemCarrinho.ValorTotal = itemCarrinho.Quantidade * itemCarrinho.ValorUnitario;
+
+            // Atualiza o carrinho
+            var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
+            if (carrinho == null)
+            {
+                return NotFound("Carrinho não encontrado.");
+            }
+            // Atualiza o valor total do carrinho
+            carrinho.ValorTotal += itemCarrinho.ValorTotal;
+
+            _context.Entry(carrinho).State = EntityState.Modified;
+            _context.Entry(itemCarrinho).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // Aumentar a quantidade de um item no carrinho
+        [HttpPut("DiminuirQuantidade/{id}")]
+        public async Task<IActionResult> DiminuirQuantidade(Guid id)
+        {
+            var itemCarrinho = await _context.ItensCarrinhos.FindAsync(id);
+            if (itemCarrinho == null)
+            {
+                return NotFound();
+            }
+
+            // Atualiza a quantidade e o valor total
+            itemCarrinho.Quantidade--;
+            if (itemCarrinho.Quantidade < 0)
+            {
+                itemCarrinho.Quantidade = 0;
+            }
+            itemCarrinho.ValorTotal = itemCarrinho.Quantidade * itemCarrinho.ValorUnitario;
+
+            // Atualiza o carrinho
+            var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
+            if (carrinho == null)
+            {
+                return NotFound("Carrinho não encontrado.");
+            }
+            // Atualiza o valor total do carrinho
+            carrinho.ValorTotal -= itemCarrinho.ValorTotal;
+
+            _context.Entry(carrinho).State = EntityState.Modified;
+            _context.Entry(itemCarrinho).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
