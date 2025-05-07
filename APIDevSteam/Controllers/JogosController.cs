@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteam.Models;
+using APIDevSteamJau.Data;
+using APIDevSteamJau.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using APIDevSteam.Data;
@@ -265,6 +266,22 @@ namespace APIDevSteamJau.Controllers
             _context.Entry(jogo).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return Ok(jogo);
+        }
+
+        // [HttpGet] : Listar Jogos com Desconto
+        [HttpGet("ListarJogosComDesconto")]
+        public async Task<IActionResult> ListarJogosComDesconto()
+        {
+            // Busca os jogos com desconto
+            var jogosComDesconto = await _context.Jogos
+                .Where(j => j.Desconto > 0)
+                .ToListAsync();
+            // Verifica se existem jogos com desconto
+            if (jogosComDesconto == null || jogosComDesconto.Count == 0)
+                // Se não houver jogos com desconto
+                return NotFound("Nenhum jogo encontrado com desconto.");
+            // Retorna a lista de jogos com desconto
+            return Ok(jogosComDesconto);
         }
 
     }
