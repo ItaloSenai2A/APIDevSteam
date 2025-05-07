@@ -1,10 +1,10 @@
-﻿using APIDevSteam.Models;
+﻿using APIDevSteamJau.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIDevSteam.Controllers
+namespace APIDevSteamJau.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -230,6 +230,35 @@ namespace APIDevSteam.Controllers
                 return Ok("Usuário atualizado com sucesso!");
 
             return BadRequest(result.Errors);
+        }
+
+        // [HttpGet] Buscar Role do usuario
+        [HttpGet("GetUserRole")]
+        public async Task<IActionResult> GetUserRole(string userId)
+        {
+            // Verifica se o usuário existe
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+            // Busca as roles do usuário
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles == null || roles.Count == 0)
+                return NotFound("Nenhum perfil encontrado para o usuário.");
+            return Ok(roles);
+        }
+
+        // [HttpGet] Busca o Usuario por Id
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            // Buscando o usuario no banco de dados
+            var user = await _userManager.FindByIdAsync(userId);
+            // Se o usuario não existir
+            if (user == null)
+                // retorna codigo 404
+                return NotFound("Usuário não encontrado.");
+            // Se encontrar, retorna codigo 200 + o objeto usuario
+            return Ok(user);
         }
     }
 
