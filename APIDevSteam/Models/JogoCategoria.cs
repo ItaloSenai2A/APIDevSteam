@@ -1,4 +1,5 @@
-﻿using APIDevSteam.Models;
+﻿using APIDevSteam.Migrations;
+using APIDevSteam.Models;
 
 namespace APIDevSteam.Models
 {

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIDevSteamJau.Data;
-using APIDevSteamJau.Models;
+using APIDevSteam.Data;
+using APIDevSteam.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using APIDevSteam.Data;
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

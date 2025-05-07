@@ -1,265 +1,105 @@
-﻿using APIDevSteamJau.Models;
+﻿using APIDevSteam.Data;
+using APIDevSteam.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuariosController : ControllerBase
+    public class JogoMidiasController : ControllerBase
     {
-        // Dependencias
-        private readonly UserManager<Usuario> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;  // Informãções do servidor web
+        private readonly APIContext _context;
 
-        // Metodo Construtor  com as a injeção de dependencias
-        public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment)
+        public JogoMidiasController(APIContext context)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _webHostEnvironment = webHostEnvironment;
+            _context = context;
         }
 
-        // [HttpPOST] : Criar uma Role (Perfil)
-        [HttpPost("CreateRole")]
-        public async Task<IActionResult> CreateRole([FromBody] string roleName)
+        // GET: api/JogoMidias
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<JogoMidia>>> GetJogosMidia()
         {
-            if (string.IsNullOrEmpty(roleName))
-                return BadRequest("Nome da Role não pode ser vazio.");
-
-            // Verifica se a Role já existe
-            if (await _roleManager.RoleExistsAsync(roleName))
-                return BadRequest("Role já existe.");
-
-            // Cria a Role
-            var role = new IdentityRole(roleName);
-            var result = await _roleManager.CreateAsync(role);
-            if (result.Succeeded)
-                return Ok($"Role '{roleName}' criada com sucesso.");
-            else
-                return BadRequest(result.Errors);
+            return await _context.JogosMidia.ToListAsync();
         }
 
-        // [HttpPOST] : Vincular um usuario a um papel (Role)
-        [HttpPost("AddRoleToUser")]
-        public async Task<IActionResult> AddRoleToUser(string userId, string roleName)
+        // GET: api/JogoMidias/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<JogoMidia>> GetJogoMidia(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Usuário não Cadastrado.");
+            var jogoMidia = await _context.JogosMidia.FindAsync(id);
 
-            var result = await _userManager.AddToRoleAsync(user, roleName);
-            if (result.Succeeded)
-                return Ok($"Perfil '{roleName}' adicionado ao usuario '{user.UserName}'.");
-
-            return BadRequest(result.Errors);
-        }
-
-
-        // [HttpGET] : Listar todos os usuarios
-        [HttpGet("GetUsers")]
-        public async Task<IActionResult> GetUsers()
-        {
-            var users = _userManager.Users.ToList();
-            if (users == null)
-                return NotFound("Nenhum usuario encontrado.");
-            return Ok(users);
-        }
-
-        // [HttpGET] : Listar usuários por perfil
-        [HttpGet("GetUsersByRole")]
-        public async Task<IActionResult> GetUsersByRole(string roleName)
-        {
-            var users = await _userManager.GetUsersInRoleAsync(roleName);
-            if (users == null)
-                return NotFound("Nenhum usuario encontrado.");
-            return Ok(users);
-        }
-
-        // [HttpPOST] : Criar um novo usuário
-        //[HttpPost("CreateUser")]
-        //public async Task<IActionResult> CreateUser([FromBody] Usuario usuario, string password)
-        //{
-        //    if (usuario == null || string.IsNullOrEmpty(password))
-        //        return BadRequest("Dados do usuário ou senha não podem ser nulos.");
-
-        //    // Verifica se o email já está em uso
-        //    var existingUser = await _userManager.FindByEmailAsync(usuario.Email);
-        //    if (existingUser != null)
-        //        return BadRequest("Já existe um usuário com este email.");
-
-        //    // Cria o novo usuário
-        //    var newUser = new Usuario
-        //    {
-        //        UserName = usuario.UserName,
-        //        Email = usuario.Email,
-        //        NormalizedEmail = usuario.Email.ToUpper(),
-        //        NormalizedUserName = usuario.UserName.ToUpper(),
-        //        EmailConfirmed = true,
-        //        PhoneNumberConfirmed = true,
-        //        TwoFactorEnabled = false,
-        //        LockoutEnabled = false,
-        //        PhoneNumber = usuario.PhoneNumber,
-        //        NomeCompleto = usuario.NomeCompleto,
-        //        DataNascimento = usuario.DataNascimento
-        //    };
-
-        //    // Adiciona o usuário ao banco de dados
-        //    var result = await _userManager.CreateAsync(newUser, password);
-        //    if (result.Succeeded)
-        //        return Ok("Usuário criado com sucesso!");
-
-        //    return BadRequest(result.Errors);
-        //}
-
-        // [HttpPOST] : Upload da Foto de Perfil
-        [HttpPost("UploadProfilePicture")]
-        public async Task<IActionResult> UploadProfilePicture(IFormFile file, string userId)
-        {
-            // Verifica se o arquivo é nulo ou vazio
-            if (file == null || file.Length == 0)
-                return BadRequest("Arquivo não pode ser nulo ou vazio.");
-
-            // Verifica se o usuário existe
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
-
-            // Verifica se o arquivo é uma imagem
-            if (!file.ContentType.StartsWith("image/"))
-                return BadRequest("O arquivo deve ser uma imagem.");
-
-            // Define o caminho para salvar a imagem na pasta Resources/Profile
-            var profileFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources", "Profile");
-            if (!Directory.Exists(profileFolder))
-                Directory.CreateDirectory(profileFolder);
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            if (Array.IndexOf(allowedExtensions, fileExtension) < 0)
-                return BadRequest("Formato de arquivo não suportado. Use .jpg, .jpeg, .png ou .gif.");
-
-            var fileName = $"{user.Id}{fileExtension}";
-            var filePath = Path.Combine(profileFolder, fileName);
-
-
-            // Verifica se o arquivo já existe e o remove
-            if (System.IO.File.Exists(filePath))
+            if (jogoMidia == null)
             {
-                System.IO.File.Delete(filePath);
+                return NotFound();
             }
 
-            // Salva o arquivo no disco
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Retorna o caminho relativo da imagem
-            var relativePath = Path.Combine("Resources", "Profile", fileName).Replace("\\", "/");
-            return Ok(new { FilePath = relativePath });
+            return jogoMidia;
         }
 
-
-        // [HttpGET] : Buscar a imagem de perfil do usuário e retornar como Base64
-        [HttpGet("GetProfilePicture/{userId}")]
-        public async Task<IActionResult> GetProfilePicture(string userId)
+        // PUT: api/JogoMidias/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutJogoMidia(Guid id, JogoMidia jogoMidia)
         {
-            // Verifica se o usuário existe
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
-
-            // Caminho da imagem na pasta Resources/Profile
-            var profileFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources", "Profile");
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
-            // Procura a imagem do usuário com base no ID
-            string? userImagePath = null;
-            foreach (var extension in allowedExtensions)
+            if (id != jogoMidia.JogoMidiaId)
             {
-                var potentialPath = Path.Combine(profileFolder, $"{user.Id}{extension}");
-                if (System.IO.File.Exists(potentialPath))
+                return BadRequest();
+            }
+
+            _context.Entry(jogoMidia).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!JogoMidiaExists(id))
                 {
-                    userImagePath = potentialPath;
-                    break;
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
                 }
             }
-            // Se a imagem não for encontrada
-            if (userImagePath == null)
-                return NotFound("Imagem de perfil não encontrada.");
 
-            // Lê o arquivo como um array de bytes
-            var imageBytes = await System.IO.File.ReadAllBytesAsync(userImagePath);
-
-            // Converte os bytes para Base64
-            var base64Image = Convert.ToBase64String(imageBytes);
-
-            // Retorna a imagem em Base64
-            return Ok(new { Base64Image = $"data:image/{Path.GetExtension(userImagePath).TrimStart('.')};base64,{base64Image}" });
-        }
-        // [HttpPUT] : Atualizar o cadastro do usuário logado
-        [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromBody] Usuario updatedUser)
-        {
-            // Obtém o ID do usuário logado a partir do token
-            var userName = User?.Identity?.Name;
-            if (string.IsNullOrEmpty(userName))
-                return Unauthorized("Usuário não autenticado.");
-
-            // Busca o usuário no banco de dados
-            var user = await _userManager.FindByNameAsync(userName);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
-
-            // Atualiza os campos permitidos
-            user.NomeCompleto = updatedUser.NomeCompleto ?? user.NomeCompleto;
-            user.PhoneNumber = updatedUser.PhoneNumber ?? user.PhoneNumber;
-            user.Email = updatedUser.Email ?? user.Email;
-            user.NormalizedEmail = updatedUser.Email?.ToUpper() ?? user.NormalizedEmail;
-            user.UserName = updatedUser.UserName ?? user.UserName;
-            user.NormalizedUserName = updatedUser.UserName?.ToUpper() ?? user.NormalizedUserName;
-            user.DataNascimento = updatedUser.DataNascimento;
-
-            // Atualiza o usuário no banco de dados
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-                return Ok("Usuário atualizado com sucesso!");
-
-            return BadRequest(result.Errors);
+            return NoContent();
         }
 
-        // [HttpGet] Buscar Role do usuario
-        [HttpGet("GetUserRole")]
-        public async Task<IActionResult> GetUserRole(string userId)
+        // POST: api/JogoMidias
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<JogoMidia>> PostJogoMidia(JogoMidia jogoMidia)
         {
-            // Verifica se o usuário existe
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
-            // Busca as roles do usuário
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles == null || roles.Count == 0)
-                return NotFound("Nenhum perfil encontrado para o usuário.");
-            return Ok(roles);
+            _context.JogosMidia.Add(jogoMidia);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetJogoMidia", new { id = jogoMidia.JogoMidiaId }, jogoMidia);
         }
 
-        // [HttpGet] Busca o Usuario por Id
-        [HttpGet("GetUserById")]
-        public async Task<IActionResult> GetUseryId(string userId)
+        // DELETE: api/JogoMidias/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteJogoMidia(Guid id)
         {
-            // Buscando o usuario no banco de dados
-            var user = await _userManager.FindByIdAsync(userId);
-            // Se o usuario não existir
-            if (user == null)
-                // retorna codigo 404
-                return NotFound("Usuário não encontrado.");
-            // Se encontrar, retorna codigo 200 + o objeto usuario
-            return Ok(user);
+            var jogoMidia = await _context.JogosMidia.FindAsync(id);
+            if (jogoMidia == null)
+            {
+                return NotFound();
+            }
+
+            _context.JogosMidia.Remove(jogoMidia);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool JogoMidiaExists(Guid id)
+        {
+            return _context.JogosMidia.Any(e => e.JogoMidiaId == id);
         }
     }
-
 }

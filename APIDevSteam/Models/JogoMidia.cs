@@ -1,4 +1,6 @@
-﻿namespace APIDevSteam.Models
+﻿using APIDevSteam.Migrations;
+
+namespace APIDevSteam.Models
 {
     public class JogoMidia
     {

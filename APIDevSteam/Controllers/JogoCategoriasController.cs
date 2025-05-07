@@ -9,7 +9,7 @@ using APIDevSteam.Models;
 using APIDevSteam.Data;
 
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

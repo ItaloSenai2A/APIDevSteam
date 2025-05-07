@@ -10,7 +10,7 @@ using APIDevSteam.Models;
 using System.Security.Claims;
 
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

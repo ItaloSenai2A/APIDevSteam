@@ -1,28 +1,28 @@
-﻿using APIDevSteamJau.Models;
+﻿using APIDevSteam.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIDevSteamJau.Controllers
+namespace APIDevSteam.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        // Dependencias
+
+        // Dependencias  
         private readonly UserManager<Usuario> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;  // Informãções do servidor web
+        private readonly IWebHostEnvironment _webHostEnvironment; // Informações do servidor web  
 
-        // Metodo Construtor  com as a injeção de dependencias
+        // Metodo Construtor com as injeção de dependencias  
         public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
         }
-
         // [HttpPOST] : Criar uma Role (Perfil)
         [HttpPost("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody] string roleName)
