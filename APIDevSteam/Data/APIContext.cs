@@ -10,6 +10,7 @@ namespace APIDevSteam.Data
         public APIContext(DbContextOptions<APIContext> options) : base(options)
         { }
         // DbSet
+        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Jogo> Jogos { get; set; }
         public DbSet<JogoMidia> JogosMidia { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
@@ -21,10 +22,13 @@ namespace APIDevSteam.Data
         public DbSet<CupomCarrinho> CuponsCarrinho { get; set; }
 
 
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             // Tabelas
+            builder.Entity<Usuario>().ToTable("Usuarios");
             builder.Entity<Jogo>().ToTable("Jogos");
             builder.Entity<JogoMidia>().ToTable("JogosMidia");
             builder.Entity<Categoria>().ToTable("Categorias");
