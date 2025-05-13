@@ -14,11 +14,15 @@ builder.Services.AddDbContext<APIContext>(options =>
 // Adicionar o serviço de CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        builder.WithOrigins("http://localhost:3001") // ou 3000 dependendo do seu Vite/React
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
+
+
 
 
 // Adicionar o serviço de autenticação
@@ -83,7 +87,7 @@ app.UseSwaggerUI(); // Habilita a interface do Swagger
 
 app.UseHttpsRedirection(); // Redireciona requisições HTTP para HTTPS
 
-app.UseCors("AllowAll"); // Habilita o CORS
+app.UseCors("AllowFrontend"); // Habilita o CORS
 
 app.UseAuthentication(); // Habilita a autenticação
 
