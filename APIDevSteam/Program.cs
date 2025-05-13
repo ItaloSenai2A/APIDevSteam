@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.WithOrigins("http://localhost:3001") // ou 3000 dependendo do seu Vite/React
+        builder.AllowAnyOrigin()// ou 3000 dependendo do seu Vite/React
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
